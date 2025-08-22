@@ -3,38 +3,61 @@ using RSS_Reader.Entities;
 
 namespace RSS_Reader.Data
 {
+    /// <summary>
+    /// Application database context for managing RSS feeds and articles.
+    /// </summary>
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        /// <summary>
+        /// Constructor accepting DbContext options.
+        /// </summary>
+        /// <param name="options">Database context options.</param>
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
 
+        /// <summary>
+        /// DbSet representing RSS feeds.
+        /// </summary>
         public DbSet<Feed> Feeds => Set<Feed>();
+
+        /// <summary>
+        /// DbSet representing articles.
+        /// </summary>
         public DbSet<Article> Articles => Set<Article>();
 
-        protected override void OnModelCreating(ModelBuilder b)
+        /// <summary>
+        /// Configures entity properties, indexes, and relationships.
+        /// </summary>
+        /// <param name="modelBuilder">The model builder to configure entities.</param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            b.Entity<Feed>(e =>
+            // Feed entity configuration
+            modelBuilder.Entity<Feed>(entity =>
             {
-                e.Property(p => p.Name)
+                entity.Property(f => f.Name)
                     .IsRequired()
                     .HasMaxLength(100);
 
-                e.Property(p => p.Url)
+                entity.Property(f => f.Url)
                     .IsRequired()
                     .HasMaxLength(2048);
 
-                e.HasIndex(p => p.Url).IsUnique();
+                entity.HasIndex(f => f.Url).IsUnique();
             });
 
-            b.Entity<Article>(e =>
+            // Article entity configuration
+            modelBuilder.Entity<Article>(entity =>
             {
-                e.Property(p => p.Title)
+                entity.Property(a => a.Title)
                     .IsRequired();
 
-                e.Property(p => p.Link)
+                entity.Property(a => a.Link)
                     .IsRequired()
                     .HasMaxLength(2048);
 
-                e.HasIndex(p => new { p.FeedId, p.Link }).IsUnique();
+                entity.HasIndex(a => new { a.FeedId, a.Link }).IsUnique();
             });
         }
     }

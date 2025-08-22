@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using RSS_Reader.Data;
+using RSS_Reader.Interfaces;
+using RSS_Reader.Services;
 
 namespace RSS_Reader
 {
@@ -11,11 +13,13 @@ namespace RSS_Reader
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            // DBContext
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
+            // Services
+            builder.Services.AddScoped<IRssIngestService, RssIngestService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -35,7 +39,7 @@ namespace RSS_Reader
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Feeds}/{action=Index}/{id?}");
 
             app.Run();
         }
